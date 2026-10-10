@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AeroCoast Sentinel | Tactical Coastal Edge Intelligence</title>
+  <meta name="description" content="IslanderHack 2026 - Mission-Critical Zero-Cloud Solar Edge Monitoring Node for South Texas Coastal Conservation.">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            tactical: {
+              base: '#070b12',
+              card: '#0b111e',
+              subtle: '#111a2d',
+              border: '#1e293b',
+              cyan: '#06b6d4',
+              teal: '#14b8a6',
+              emerald: '#10b981',
+              amber: '#f59e0b',
+              rose: '#f43f5e'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  
+  <!-- Custom Tactical Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-tactical-base text-slate-100 bg-grid-pattern min-h-screen flex flex-col selection:bg-cyan-500/30 selection:text-cyan-200">
+
+  <!-- TOP CONSOLE NAVIGATION / TACTICAL MISSION HEADER -->
+  <header class="border-b border-slate-800 bg-slate-950/95 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
+      
+      <!-- Brand & Mission Callout -->
+      <div class="flex items-center space-x-3.5">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-600 via-teal-500 to-emerald-400 p-0.5 flex items-center justify-center shadow-lg shadow-cyan-950/60">
+          <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
+            <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2.5">
+            <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+              AeroCoast <span class="text-cyan-400">Sentinel</span>
+            </h1>
+            <span class="text-[11px] px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 font-mono font-bold tracking-wide">
+              NODE #4109 [TACTICAL MESH]
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 font-medium">
+            TAMU-CC IslanderHack 2026 · Coastal Conservation Track · Corpus Christi Bay & Mustang Island
+          </p>
+        </div>
+      </div>
+
+      <!-- Live Mission Status Chips (Grandma Theory: High-Contrast Instant Metrics) -->
+      <div class="flex flex-wrap items-center gap-2.5">
+        
+        <!-- Link Layer: LoRaWAN 915 MHz Status -->
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900/90 border border-slate-700/80 text-xs font-mono">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="text-slate-400">LoRaWAN:</span>
+          <span class="text-emerald-400 font-bold" id="header-lora-status">US915 CONNECTED</span>
+          <span class="text-slate-500 text-[10px]" id="header-lora-rssi">(-86 dBm)</span>
+        </div>
+
+        <!-- Solar Power Bus Indicator -->
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900/90 border border-slate-700/80 text-xs font-mono">
+          <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd" />
+          </svg>
+          <span class="text-slate-400">LiFePO4:</span>
+          <span class="text-emerald-400 font-bold" id="header-battery-soc">96.4% (13.26V)</span>
+          <span class="text-cyan-400 text-[10px]" id="header-power-draw">4.2W Draw</span>
+        </div>
+
+        <!-- Zero-Cloud Badge -->
+        <div class="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900/90 border border-slate-700/80 text-xs font-mono">
+          <span class="text-slate-400">Compute:</span>
+          <span class="text-cyan-300 font-bold">Local INT8 SIMD (Zero-Cloud)</span>
+        </div>
+
+        <!-- Export GeoJSON Button -->
+        <button id="btn-export-geojson" class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 active:scale-95 transition-all text-xs font-semibold text-white shadow-md shadow-cyan-900/40">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          <span>Export GeoJSON Log</span>
+        </button>
+
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MAIN DASHBOARD CONTENT -->
+  <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- SCENARIO SWITCHER & GRANDMA SUMMARY BANNER -->
+    <div class="glass-panel rounded-2xl p-4 sm:p-5 shadow-2xl border border-slate-800">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        
+        <!-- Left: Interactive Scenario Selector -->
+        <div class="flex-1">
+          <label for="scenario-select" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5 flex items-center gap-1.5 font-mono">
+            <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+            </svg>
+            Active Tactical Surveillance Sector:
+          </label>
+          <div class="relative">
+            <select id="scenario-select" class="w-full appearance-none bg-slate-900/90 hover:bg-slate-800 text-white font-medium text-sm sm:text-base rounded-xl px-4 py-2.5 pr-10 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all cursor-pointer font-mono">
+              <option value="plastic">1. Corpus Christi Beach Plastic Litter (Hazard Response Sector)</option>
+              <option value="erosion">2. Mustang Island Dune Erosion Alert (Geomorphic Threat Sector)</option>
+              <option value="sanctuary">3. Laguna Madre Clean Sanctuary (Biodiversity & Seagrass Sector)</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-cyan-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Grandma Theory High-Contrast Verdict Banner -->
+        <div class="lg:w-7/12 flex items-center">
+          <div id="verdict-banner" class="w-full rounded-xl p-3.5 border transition-all duration-300 flex items-center gap-3.5 bg-amber-950/40 border-amber-500/50 text-amber-200">
+            <div id="verdict-icon-container" class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 bg-amber-500/20 text-amber-400 font-bold text-xl">
+              ⚠️
+            </div>
+            <div class="overflow-hidden">
+              <div class="text-[11px] uppercase font-bold tracking-wider text-slate-400 font-mono" id="verdict-status-title">
+                STATUS: ELEVATED THREAT
+              </div>
+              <div class="text-sm sm:text-base font-semibold leading-tight truncate" id="verdict-status-message">
+                Plastic debris detected in surf zone. Dispatched alert to local beach keepers.
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- MAIN TWO-COLUMN DECK: OPTICAL FEED + HARDWARE LINK & ENERGY BUS -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+
+      <!-- LEFT 7 COLS: OPTICAL FEED VIEWPORT + FIELD LINK LAYER -->
+      <section class="lg:col-span-7 flex flex-col space-y-4">
+        
+        <!-- Feed Top Controls -->
+        <div class="flex items-center justify-between text-xs px-1">
+          <div class="flex items-center gap-2 font-mono text-slate-400">
+            <span class="inline-block w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+            <span class="text-slate-200 font-semibold tracking-wide">OPTICAL EDGE SENSOR STREAM [OFF-GRID NODE]</span>
+            <span class="text-slate-600">|</span>
+            <span class="text-cyan-400 font-bold" id="hud-gps-coords">27.8006° N, 97.3964° W</span>
+          </div>
+
+          <div class="flex items-center gap-2 font-mono">
+            <!-- Tactical Feed Source Toggle: Synthetic Scenario vs Real-Time Webcam -->
+            <button id="btn-toggle-feed-source" class="px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 text-[11px] text-slate-300 hover:text-cyan-400 border border-slate-700 transition flex items-center gap-1.5 shadow-sm font-semibold active:scale-95" title="Switch between Synthetic Simulation and Real-Time Local Webcam Feed">
+              <span id="feed-source-icon">📷</span>
+              <span id="feed-source-label">Feed: <strong class="text-cyan-400">SYNTHETIC</strong></span>
+            </button>
+            <!-- HUD Scanline Switch -->
+            <button id="btn-toggle-scanlines" class="px-2.5 py-1 rounded bg-slate-900 text-[11px] text-slate-300 hover:text-cyan-400 border border-slate-700 transition">
+              Scanlines: <span id="scanlines-status" class="text-cyan-400">ON</span>
+            </button>
+            <!-- Pause / Play Switch -->
+            <button id="btn-toggle-pause" class="px-2.5 py-1 rounded bg-slate-900 text-[11px] text-slate-300 hover:text-cyan-400 border border-slate-700 transition">
+              Sensor: <span id="pause-status" class="text-emerald-400">ACTIVE</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Canvas Container with Glass and HUD Elements -->
+        <div id="viewport-container" class="relative aspect-video w-full bg-slate-950 scanlines border border-slate-800">
+          
+          <!-- Underlying Canvas -->
+          <canvas id="optical-canvas" class="w-full h-full block"></canvas>
+
+          <!-- Hidden HTML5 Video for Live Webcam Streaming -->
+          <video id="webcam-video" autoplay playsinline muted class="hidden"></video>
+
+          <!-- Top-Left In-Canvas HUD: Edge Diagnostics -->
+          <div class="absolute top-3 left-3 z-30 pointer-events-none flex flex-col gap-1.5 font-mono">
+            <div class="px-2.5 py-1 rounded-md bg-slate-950/85 backdrop-blur-md border border-cyan-500/40 text-[11px] text-cyan-300 flex items-center gap-2 shadow-lg">
+              <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+              <span>ENGINE: <strong class="text-white">INT8 WASM SIMD</strong></span>
+            </div>
+            
+            <div class="px-2.5 py-1 rounded-md bg-slate-950/85 backdrop-blur-md border border-slate-700 text-[11px] text-slate-300 flex items-center gap-3">
+              <span>LATENCY: <strong id="canvas-latency" class="text-emerald-400 font-bold">8.4 ms</strong></span>
+              <span class="text-slate-600">|</span>
+              <span>FRAME RATE: <strong id="canvas-fps" class="text-white">60 FPS</strong></span>
+            </div>
+          </div>
+
+          <!-- Top-Right In-Canvas HUD: Target Counts -->
+          <div class="absolute top-3 right-3 z-30 pointer-events-none font-mono">
+            <div class="px-3 py-1.5 rounded-md bg-slate-950/85 backdrop-blur-md border border-slate-700 text-xs text-slate-300 shadow-lg text-right">
+              <div class="text-[10px] text-slate-400 uppercase tracking-widest font-semibold">Active Targets</div>
+              <div id="canvas-target-count" class="text-lg font-bold text-cyan-400">3 OBJECTS</div>
+            </div>
+          </div>
+
+          <!-- Bottom HUD Bar across the bottom of the feed -->
+          <div class="absolute bottom-0 inset-x-0 z-30 pointer-events-none bg-gradient-to-t from-slate-950/95 via-slate-950/60 to-transparent p-3 pt-6 flex items-end justify-between text-[11px] font-mono">
+            <div class="text-slate-300 bg-slate-950/85 px-2 py-0.5 rounded border border-slate-800">
+              LOCATION: <span id="hud-location-name" class="text-white font-semibold">Corpus Christi Beach (North Sector)</span>
+            </div>
+            <div class="text-slate-400 bg-slate-950/85 px-2 py-0.5 rounded border border-slate-800 flex items-center gap-2">
+              <span>MODEL: <strong class="text-cyan-300">YOLO-CoastLite v4 (INT8)</strong></span>
+              <span class="text-slate-600">•</span>
+              <span>BUFFER: <strong class="text-emerald-400">LOCAL SRAM (0 DROP)</strong></span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Detection Tags List -->
+        <div class="glass-panel rounded-xl p-3 border border-slate-800">
+          <div class="text-xs uppercase font-bold tracking-wider text-slate-400 mb-2 flex items-center justify-between font-mono">
+            <span class="flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5 text-cyan-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+              </svg>
+              Edge Visual Detection Feed (Instant Classification)
+            </span>
+            <span class="text-[10px] text-slate-500 font-mono">DETERMINISTIC INFERENCE &lt; 15ms</span>
+          </div>
+
+          <div id="detection-tags-container" class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs font-mono">
+            <!-- Dynamic Detection Tags populated via app.js -->
+          </div>
+        </div>
+
+        <!-- ENTERPRISE COMPONENT 4: FIELD HARDWARE TELEMETRY & LINK LAYER -->
+        <div class="glass-panel rounded-xl p-4 border border-slate-800 space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
+            <div class="flex items-center gap-2 font-mono">
+              <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071a10 10 0 0114.142 0M1.394 9.393a15 15 0 0121.213 0" />
+              </svg>
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-200">
+                Field Hardware Link Layer & Ring Buffer Telemetry
+              </h3>
+            </div>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+              LORAWAN US915 BAND 2
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+            
+            <!-- Metric 1: Uplink Signal -->
+            <div class="bg-slate-900/80 rounded-lg p-2.5 border border-slate-800">
+              <div class="text-[10px] text-slate-400 uppercase">Signal Strength</div>
+              <div class="text-base font-bold text-emerald-400" id="link-rssi">-86 dBm</div>
+              <div class="text-[10px] text-slate-500">SNR: <span id="link-snr" class="text-slate-300">+8.4 dB</span></div>
+            </div>
+
+            <!-- Metric 2: Packets Transmitted -->
+            <div class="bg-slate-900/80 rounded-lg p-2.5 border border-slate-800">
+              <div class="text-[10px] text-slate-400 uppercase">TX Packets</div>
+              <div class="text-base font-bold text-cyan-400" id="link-packets">1,482</div>
+              <div class="text-[10px] text-emerald-400">0 Dropped (100%)</div>
+            </div>
+
+            <!-- Metric 3: Ring Buffer Utilization -->
+            <div class="bg-slate-900/80 rounded-lg p-2.5 border border-slate-800">
+              <div class="text-[10px] text-slate-400 uppercase">Local Ring Buffer</div>
+              <div class="text-base font-bold text-slate-200" id="link-buffer">12.4% / 64MB</div>
+              <div class="text-[10px] text-cyan-400">Zero Overflow</div>
+            </div>
+
+            <!-- Metric 4: Mesh Gateway ID -->
+            <div class="bg-slate-900/80 rounded-lg p-2.5 border border-slate-800">
+              <div class="text-[10px] text-slate-400 uppercase">Mesh Uplink Gateway</div>
+              <div class="text-xs font-bold text-slate-200 truncate" title="TAMU-CC-CCBAY-GW01">CCBAY-GW01</div>
+              <div class="text-[10px] text-slate-400">Freq: 903.9 MHz</div>
+            </div>
+
+          </div>
+        </div>
+
+      </section>
+
+      <!-- RIGHT 5 COLS: REAL-TIME SOLAR ENERGY BUS + TELEMETRY + GREEN AI AUDIT -->
+      <section class="lg:col-span-5 flex flex-col space-y-4">
+
+        <!-- ENTERPRISE COMPONENT 1: REAL-TIME SOLAR & ENERGY STORAGE BUS -->
+        <div class="glass-panel rounded-2xl p-4.5 border border-slate-800 shadow-xl space-y-3.5">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-amber-300 flex items-center gap-2 font-mono">
+              <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              Solar PV & LiFePO4 Energy Storage Bus
+            </h2>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 font-bold">
+              SURPLUS CHARGING
+            </span>
+          </div>
+
+          <!-- Battery Cell Telemetry Strip -->
+          <div class="grid grid-cols-3 gap-2.5 font-mono text-center">
+            
+            <div class="bg-slate-900/90 rounded-xl p-2.5 border border-slate-800">
+              <div class="text-[10px] text-slate-400 uppercase">Bus Voltage</div>
+              <div class="text-lg font-bold text-white readable-stat-badge" id="bus-voltage">13.26 V</div>
+              <div class="text-[10px] text-emerald-400">4S LiFePO4 Nominal</div>
+            </div>
+
+            <div class="bg-slate-900/90 rounded-xl p-2.5 border border-slate-800">
+              <div class="text-[10px] text-slate-400 uppercase">State of Charge</div>
+              <div class="text-lg font-bold text-emerald-400 readable-stat-badge" id="bus-soc">96.4%</div>
+              <div class="text-[10px] text-slate-400">12.8V / 10Ah Cell</div>
+            </div>
+
+            <div class="bg-slate-900/90 rounded-xl p-2.5 border border-slate-800">
+              <div class="text-[10px] text-slate-400 uppercase">Cell Enclosure</div>
+              <div class="text-lg font-bold text-cyan-300 readable-stat-badge" id="bus-temp">28.2°C</div>
+              <div class="text-[10px] text-slate-400">Thermal Nominal</div>
+            </div>
+
+          </div>
+
+          <!-- Power Flow Comparison: Solar Input vs Node Load -->
+          <div class="bg-slate-900/90 rounded-xl p-3 border border-slate-800 space-y-2">
+            <div class="flex justify-between items-center text-xs font-mono">
+              <span class="text-slate-400">Solar PV Harvest:</span>
+              <span class="text-amber-400 font-bold" id="bus-solar-watts">18.7 W</span>
+            </div>
+            <div class="flex justify-between items-center text-xs font-mono">
+              <span class="text-slate-400">Node Load (Inference):</span>
+              <span class="text-cyan-400 font-bold" id="bus-load-watts">4.2 W</span>
+            </div>
+            
+            <!-- Dynamic Net Power Balance Gauge -->
+            <div class="pt-1">
+              <div class="flex justify-between items-center text-[11px] font-mono mb-1">
+                <span class="text-slate-300">Net Power Surplus into Battery:</span>
+                <span class="text-emerald-400 font-bold" id="bus-net-surplus">+14.5 W</span>
+              </div>
+              <div class="w-full bg-slate-950 rounded-full h-2.5 border border-slate-800 overflow-hidden">
+                <div id="bus-power-bar" class="bg-gradient-to-r from-emerald-500 to-cyan-400 h-2.5 rounded-full transition-all duration-500" style="width: 78%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- MPPT Efficiency Footer -->
+          <div class="flex items-center justify-between text-[11px] font-mono text-slate-400 bg-slate-950/60 px-3 py-1.5 rounded-lg border border-slate-800">
+            <span>MPPT Conversion Efficiency:</span>
+            <span class="text-emerald-400 font-bold">97.4% (Ultra-Low Dissipation)</span>
+          </div>
+
+        </div>
+
+        <!-- MULTI-SENSOR COASTAL TELEMETRY CARD -->
+        <div class="glass-panel rounded-2xl p-4.5 border border-slate-800 shadow-xl space-y-3.5">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2 font-mono">
+              <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              Multi-Sensor Coastal Telemetry
+            </h2>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-cyan-300 border border-slate-700">
+              TAMU-CC BUOY SYNC
+            </span>
+          </div>
+
+          <!-- Metric 1: Tide Level -->
+          <div class="bg-slate-900/80 rounded-xl p-3 border border-slate-800">
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-xs text-slate-400 flex items-center gap-1.5 font-medium">
+                Tide Level (MLLW Datum)
+              </span>
+              <span class="text-[11px] font-mono text-cyan-400" id="tide-phase-label">Ebb Flow</span>
+            </div>
+            <div class="flex items-baseline justify-between">
+              <div class="text-xl font-bold font-mono text-white readable-stat-badge" id="telemetry-tide">
+                +0.82 <span class="text-xs font-normal text-slate-400">m</span>
+              </div>
+              <div class="text-xs text-emerald-400 font-mono">
+                Safe Tidal Range
+              </div>
+            </div>
+            <div class="w-full bg-slate-950 rounded-full h-2 mt-2 overflow-hidden border border-slate-800">
+              <div id="tide-bar" class="bg-gradient-to-r from-teal-500 to-cyan-400 h-2 rounded-full transition-all duration-500" style="width: 55%;"></div>
+            </div>
+          </div>
+
+          <!-- Metric 2: Salinity Level -->
+          <div class="bg-slate-900/80 rounded-xl p-3 border border-slate-800">
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-xs text-slate-400 flex items-center gap-1.5 font-medium">
+                Salinity Concentration
+              </span>
+              <span class="text-[11px] font-mono text-teal-300" id="salinity-status">Hypersaline Normal</span>
+            </div>
+            <div class="flex items-baseline justify-between">
+              <div class="text-xl font-bold font-mono text-white readable-stat-badge" id="telemetry-salinity">
+                35.4 <span class="text-xs font-normal text-slate-400">PSU</span>
+              </div>
+              <div class="text-xs text-slate-400 font-mono">
+                Baseline: 34.0–38.5
+              </div>
+            </div>
+            <div class="w-full bg-slate-950 rounded-full h-2 mt-2 overflow-hidden border border-slate-800">
+              <div id="salinity-bar" class="bg-gradient-to-r from-teal-500 to-emerald-400 h-2 rounded-full transition-all duration-500" style="width: 62%;"></div>
+            </div>
+          </div>
+
+          <!-- Metric 3: Dune Scarp Risk Indicator -->
+          <div class="bg-slate-900/80 rounded-xl p-3 border border-slate-800">
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-xs text-slate-400 flex items-center gap-1.5 font-medium">
+                Dune Scarp Risk Index
+              </span>
+              <span id="dune-risk-badge" class="px-2 py-0.5 rounded text-[10px] font-bold font-mono uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                LOW RISK
+              </span>
+            </div>
+            <div class="flex items-baseline justify-between">
+              <div class="text-xl font-bold font-mono text-white readable-stat-badge" id="telemetry-dune-scarp">
+                18° <span class="text-xs font-normal text-slate-400">Slope angle</span>
+              </div>
+              <div class="text-xs text-slate-400 font-mono" id="dune-stability-label">
+                Toe Stable · Zero Slump
+              </div>
+            </div>
+            <div class="w-full bg-slate-950 rounded-full h-2 mt-2 overflow-hidden border border-slate-800">
+              <div id="dune-risk-bar" class="bg-emerald-400 h-2 rounded-full transition-all duration-500" style="width: 25%;"></div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- GREEN AI RESOURCE AUDIT CARD -->
+        <div class="glass-panel-accent rounded-2xl p-4.5 border shadow-xl space-y-3">
+          <div class="flex items-center justify-between border-b border-cyan-800/40 pb-2.5">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-cyan-300 flex items-center gap-2 font-mono">
+              <svg class="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M4 2a2 2 0 00-2 2v11a3 3 0 106 0V4a2 2 0 00-2-2H4zm1 14a1 1 0 100-2 1 1 0 000 2zm5-1.732V5a2 2 0 012-2h4a2 2 0 012 2v7.268A4.004 4.004 0 0116 20a4.004 4.004 0 01-6-3.732zM12 5v4h4V5h-4z" clip-rule="evenodd" />
+              </svg>
+              Green AI Resource Audit
+            </h2>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 font-bold">
+              98.3% REDUCTION
+            </span>
+          </div>
+
+          <!-- Comparison Bars -->
+          <div class="space-y-2.5 font-mono text-xs">
+            <div class="bg-slate-900/90 rounded-xl p-2.5 border border-slate-800">
+              <div class="flex justify-between text-slate-400 mb-1">
+                <span class="text-rose-300">Cloud GPU (NVIDIA A100)</span>
+                <span>250.0 W</span>
+              </div>
+              <div class="w-full bg-slate-950 rounded-full h-1.5 border border-slate-800">
+                <div class="bg-rose-500 h-1.5 rounded-full" style="width: 100%;"></div>
+              </div>
+            </div>
+
+            <div class="bg-slate-900/90 rounded-xl p-2.5 border border-cyan-500/40 badge-glow-cyan">
+              <div class="flex justify-between text-slate-400 mb-1">
+                <span class="text-cyan-300">AeroCoast Edge Node (Local)</span>
+                <span class="text-emerald-400 font-bold">4.2 W</span>
+              </div>
+              <div class="w-full bg-slate-950 rounded-full h-1.5 border border-slate-800">
+                <div class="bg-gradient-to-r from-emerald-500 to-cyan-400 h-1.5 rounded-full" style="width: 1.7%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Environmental Stats -->
+          <div class="grid grid-cols-2 gap-2 font-mono text-center pt-1">
+            <div class="bg-slate-900/80 rounded-lg p-2 border border-slate-800">
+              <div class="text-[10px] text-slate-400 uppercase">Daily CO₂ Avoided</div>
+              <div class="text-sm font-bold text-emerald-400">2.38 kg CO₂e</div>
+            </div>
+            <div class="bg-slate-900/80 rounded-lg p-2 border border-slate-800">
+              <div class="text-[10px] text-slate-400 uppercase">Energy Reduction</div>
+              <div class="text-sm font-bold text-cyan-400">98.32%</div>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+
+    <!-- ENTERPRISE ANALYTICS DECK: 3 CHARTS IN INDUSTRIAL GRID -->
+    <section class="space-y-5 pt-2">
+      
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+        <h2 class="text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2 font-mono">
+          <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+          Industrial Analytics & Environmental Auditing Deck
+        </h2>
+        <span class="text-xs font-mono text-slate-500">24-HOUR TELEMETRY BUFFER</span>
+      </div>
+
+      <!-- Grid of 3 Charts -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+        <!-- CHART 1: 24-HOUR TIDE & SALINITY TELEMETRY -->
+        <div class="glass-panel rounded-2xl p-4 border border-slate-800 shadow-xl space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+            <div>
+              <h3 class="text-xs font-bold text-white font-mono flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+                Tidal Surge & Salinity Cycle
+              </h3>
+              <p class="text-[10px] text-slate-400">Texas A&M Coastal Buoy Synchronization</p>
+            </div>
+            <div class="text-[10px] font-mono text-cyan-300">MLLW / PSU</div>
+          </div>
+          <div class="relative w-full h-56">
+            <canvas id="telemetryChart"></canvas>
+          </div>
+        </div>
+
+        <!-- CHART 2 (NEW): CUMULATIVE CARBON OFFSET & EMISSIONS DIFFERENTIAL -->
+        <div class="glass-panel rounded-2xl p-4 border border-slate-800 shadow-xl space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+            <div>
+              <h3 class="text-xs font-bold text-emerald-400 font-mono flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                Cumulative Carbon Footprint (g CO₂e)
+              </h3>
+              <p class="text-[10px] text-slate-400">Cloud GPU (250W) vs Edge Node (4.2W Solar)</p>
+            </div>
+            <div class="text-[10px] font-mono text-emerald-300 font-bold" id="chart-carbon-avoided">
+              -2,380g CO₂ Net
+            </div>
+          </div>
+          <div class="relative w-full h-56">
+            <canvas id="carbonOffsetChart"></canvas>
+          </div>
+        </div>
+
+        <!-- CHART 3 (NEW): 24-HOUR MULTI-CLASS DETECTION FREQUENCY BAR CHART -->
+        <div class="glass-panel rounded-2xl p-4 border border-slate-800 shadow-xl space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+            <div>
+              <h3 class="text-xs font-bold text-amber-300 font-mono flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                24-Hr Multi-Class Detection Frequency
+              </h3>
+              <p class="text-[10px] text-slate-400">Debris, Ghost Gear, Scarping & Avian Wildlife</p>
+            </div>
+            <div class="text-[10px] font-mono text-slate-400">HOURLY COUNTS</div>
+          </div>
+          <div class="relative w-full h-56">
+            <canvas id="detectionFrequencyChart"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- OFFICIAL ISLANDERHACK 2026 DATA & HARDWARE PROVENANCE BADGE STRIP -->
+  <aside class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pb-4">
+    <div class="glass-panel rounded-xl px-4 py-3 border border-slate-800 text-xs font-mono flex flex-wrap items-center justify-between gap-3 text-slate-300 shadow-xl">
+      <div class="flex items-center gap-2">
+        <span class="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40 text-[10px] tracking-wide">
+          OFFICIAL PROVENANCE
+        </span>
+        <span class="text-slate-400 font-bold">Anchor Stack:</span>
+      </div>
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-slate-400">
+        <span class="flex items-center gap-1.5 text-slate-300">
+          <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+          NOAA Station #8775870 (Tides & Currents API)
+        </span>
+        <span class="text-slate-600">|</span>
+        <span class="flex items-center gap-1.5 text-slate-300">
+          <span class="w-2 h-2 rounded-full bg-teal-400"></span>
+          GCOOS / TCEQ Coastal Buoy Grounding
+        </span>
+        <span class="text-slate-600">|</span>
+        <span class="flex items-center gap-1.5 text-slate-300">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          Species Taxonomy: iNaturalist & GBIF
+        </span>
+        <span class="text-slate-600">|</span>
+        <span class="flex items-center gap-1.5 text-slate-300">
+          <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+          Carbon Accounting: CodeCarbon Standard
+        </span>
+        <span class="text-slate-600">|</span>
+        <span class="flex items-center gap-1.5 text-slate-300">
+          <span class="w-2 h-2 rounded-full bg-purple-400"></span>
+          Hardware Target: Freenove ESP32-S3 (esp-nn / TFLite Micro)
+        </span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ACCESSIBLE FOOTER -->
+  <footer class="border-t border-slate-800 bg-slate-950 py-4 text-xs text-slate-400">
+    <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 font-mono">
+      <div>
+        <span class="font-semibold text-slate-300">AeroCoast Sentinel</span> · Built for 
+        <strong class="text-cyan-400">IslanderHack 2026</strong> (Texas A&M University - Corpus Christi).
+      </div>
+      <div class="flex items-center gap-3 text-slate-400 text-[11px]">
+        <span class="flex items-center gap-1">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Off-Grid Defense & Conservation Node #4109
+        </span>
+        <span>•</span>
+        <span>100% Zero-Cloud</span>
+        <span>•</span>
+        <span>Sub-15ms Local Edge SIMD</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Main JavaScript App -->
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+name: AeroCoast Sentinel CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate-assets-and-code:
+    name: Validate Core Assets & Code Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Validate Core Dashboard Files
+        run: |
+          test -f index.html || (echo "Missing index.html" && exit 1)
+          test -f app.js || (echo "Missing app.js" && exit 1)
+          test -f styles.css || (echo "Missing styles.css" && exit 1)
+          test -f LICENSE || (echo "Missing LICENSE" && exit 1)
+          test -f CONTRIBUTING.md || (echo "Missing CONTRIBUTING.md" && exit 1)
+          test -f HARDWARE.md || (echo "Missing HARDWARE.md" && exit 1)
+          echo "All core repository root files verified."
+
+      - name: Validate Embedded Firmware Sources
+        run: |
+          test -f firmware/esp32_s3_aerocoast/main.cpp || exit 1
+          test -f firmware/esp32_s3_aerocoast/model_data.h || exit 1
+          echo "ESP32-S3 firmware sources verified."
+
+      - name: Validate Assets and Architecture Diagram
+        run: |
+          test -f assets/architecture_diagram.svg || exit 1
+          test -f assets/screenshots/01_hazard_litter_detection.png || exit 1
+          test -f assets/screenshots/02_dune_erosion_alert.png || exit 1
+          test -f assets/screenshots/03_clean_sanctuary_mode.png || exit 1
+          test -f assets/screenshots/04_green_ai_energy_bus.png || exit 1
+          test -f assets/screenshots/05_industrial_analytics_deck.png || exit 1
+          test -f assets/screenshots/06_tactical_console_overview.png || exit 1
+          echo "All 6 high-res gallery screenshots and SVG architecture diagram verified."
+
+      - name: Syntax Check JavaScript
+        run: |
+          node -c app.js
+          echo "app.js syntax parsed with zero errors."
+
+      - name: Validate HTML Structure
+        run: |
+          grep -q 'id="optical-canvas"' index.html || exit 1
+          grep -q 'id="scenario-select"' index.html || exit 1
+          grep -q 'id="btn-export-geojson"' index.html || exit 1
+          grep -q 'id="telemetryChart"' index.html || exit 1
+          echo "HTML element IDs verified against Grandma Theory UI specifications."
